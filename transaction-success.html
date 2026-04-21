@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-50:  #E1F5EE;
+      --teal-100: #9FE1CB;
+      --teal-400: #1D9E75;
+      --teal-600: #0F6E56;
+      --teal-800: #085041;
+      --teal-900: #04342C;
+      --bg:       #F4F2EC;
+      --surface:  #FFFFFF;
+      --surface2: #F7F6F2;
+      --border:   rgba(0,0,0,0.08);
+      --text-1:   #1A1A18;
+      --text-2:   #6B6A64;
+      --text-3:   #A3A29B;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* ── card ──────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 3rem 2.5rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.06);
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .card-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal-800), var(--teal-400), var(--teal-100));
+    }
+
+    /* ── confetti ──────────────────────────────── */
+    .confetti-wrap {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 220px;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: fall linear both;
+    }
+
+    @keyframes fall {
+      0%   { opacity: 1; transform: translateY(-10px) rotate(0deg)   scale(1); }
+      80%  { opacity: 0.7; }
+      100% { opacity: 0; transform: translateY(240px) rotate(540deg) scale(0.5); }
+    }
+
+    /* ── check ring ────────────────────────────── */
+    .ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: var(--teal-50);
+      margin: 0 auto 1.75rem;
+      animation: popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275) 0.1s both;
+    }
+
+    .check-svg {
+      width: 38px;
+      height: 38px;
+      fill: none;
+      stroke: var(--teal-600);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .check-path {
+      stroke-dasharray: 52;
+      stroke-dashoffset: 52;
+      animation: drawCheck 0.45s ease 0.55s forwards;
+    }
+
+    @keyframes popIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ── typography ────────────────────────────── */
+    .title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text-1);
+      line-height: 1.15;
+      margin-bottom: 0.4rem;
+      animation: fadeUp 0.4s ease 0.55s both;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      text-align: center;
+      color: var(--text-2);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.6s both;
+    }
+
+    /* ── amount block ──────────────────────────── */
+    .amount-block {
+      background: var(--surface2);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem 1.75rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.4s ease 0.65s both;
+    }
+    .amount-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.5rem;
+    }
+    .amount {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      letter-spacing: -0.02em;
+      color: var(--text-1);
+      line-height: 1;
+    }
+    .amount-currency {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 24px;
+      font-weight: 300;
+      vertical-align: super;
+      margin-right: 2px;
+      color: var(--text-2);
+    }
+
+    /* ── details ───────────────────────────────── */
+    .details {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.72s both;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+    }
+    .detail-label {
+      color: var(--text-2);
+      font-weight: 300;
+    }
+    .detail-value {
+      color: var(--text-1);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--teal-50);
+      color: var(--teal-800);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 100px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal-400);
+      flex-shrink: 0;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: var(--border);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── actions ───────────────────────────────── */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeUp 0.4s ease 0.8s both;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--teal-800);
+      color: var(--teal-100);
+    }
+    .btn-primary:hover { background: var(--teal-600); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 0.5px solid var(--border);
+    }
+    .btn-ghost:hover {
+      background: var(--surface2);
+      color: var(--text-1);
+    }
+
+    /* ── footer note ───────────────────────────── */
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-3);
+      text-align: center;
+      animation: fadeUp 0.4s ease 0.9s both;
+    }
+
+    /* ── brand strip ───────────────────────────── */
+    .brand {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: fadeUp 0.4s ease 1s both;
+    }
+    .brand svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── keyframes ─────────────────────────────── */
+    @keyframes cardIn {
+      0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    @keyframes fadeUp {
+      0%   { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── responsive ────────────────────────────── */
+    @media (max-width: 480px) {
+      .card { padding: 2.5rem 1.5rem 2rem; }
+      .amount { font-size: 40px; }
+      .title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-bar"></div>
+    <div class="confetti-wrap" id="confetti"></div>
+
+    <div class="ring-wrap">
+      <svg class="check-svg" viewBox="0 0 38 38" aria-hidden="true">
+        <path class="check-path" d="M9 19l8 8 14-14"/>
+      </svg>
+    </div>
+
+    <h1 class="title">Payment successful</h1>
+    <p class="subtitle">Your transaction has been confirmed.</p>
+
+    <div class="amount-block">
+      <p class="amount-label">Total charged</p>
+      <p class="amount"><span class="amount-currency">$</span>249.00</p>
+    </div>
+
+    <div class="details">
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="badge"><span class="badge-dot"></span>Completed</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Reference</span>
+        <span class="detail-value">#TXN-8842-KX</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date</span>
+        <span class="detail-value">Apr 21, 2026</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Method</span>
+        <span class="detail-value">Visa •••• 4291</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">To</span>
+        <span class="detail-value">Acme Corp</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary">Download receipt</button>
+      <button class="btn btn-ghost">Back to dashboard</button>
+    </div>
+
+    <p class="footer-note">A confirmation has been sent to alex@email.com</p>
+  </div>
+
+  <p class="brand">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5a5.5 5.5 0 110-11 5.5 5.5 0 010 11z" fill="currentColor"/>
+      <path d="M8 5a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 018 5zm0 6a.75.75 0 100-1.5.75.75 0 000 1.5z" fill="currentColor"/>
+    </svg>
+    Secured by PayShield · 256-bit encryption
+  </p>
+
+  <script>
+    (function () {
+      const colors = ['#1D9E75','#5DCAA5','#9FE1CB','#0F6E56','#E1F5EE','#085041','#04342C'];
+      const wrap = document.getElementById('confetti');
+      for (let i = 0; i < 28; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        const size = 4 + Math.random() * 6;
+        d.style.cssText = [
+          `left:${Math.random() * 100}%`,
+          `width:${size}px`,
+          `height:${size}px`,
+          `background:${colors[Math.floor(Math.random() * colors.length)]}`,
+          `animation-duration:${1.4 + Math.random() * 1.6}s`,
+          `animation-delay:${Math.random() * 0.9}s`,
+        ].join(';');
+        wrap.appendChild(d);
+      }
+    })();
+  </script>
+</body>
+</html>
