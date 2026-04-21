@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Error</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amber-50:  #FAEEDA;
+      --amber-100: #FAC775;
+      --amber-200: #EF9F27;
+      --amber-400: #BA7517;
+      --amber-600: #854F0B;
+      --amber-800: #633806;
+      --amber-900: #412402;
+      --bg:        #F5F1E8;
+      --surface:   #FFFCF5;
+      --surface2:  #F5F0E4;
+      --surface3:  #EDE8DC;
+      --border:    rgba(0,0,0,0.07);
+      --border2:   rgba(0,0,0,0.11);
+      --text-1:    #1E1A12;
+      --text-2:    #7A7060;
+      --text-3:    #B0A898;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* ── card ──────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-xl);
+      padding: 3rem 2.5rem 2.5rem;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 40px rgba(0,0,0,0.07), 0 0 0 1px rgba(186,117,23,0.08);
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .card-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber-900), var(--amber-200), var(--amber-100));
+    }
+
+    /* warm glow at top */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 160px;
+      background: radial-gradient(ellipse, rgba(186,117,23,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── icon ring ─────────────────────────────── */
+    .ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: var(--amber-50);
+      border: 1.5px solid rgba(186,117,23,0.2);
+      margin: 0 auto 1.75rem;
+      animation: popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275) 0.1s both;
+    }
+
+    .warn-svg {
+      width: 40px;
+      height: 40px;
+      fill: none;
+    }
+
+    .tri-path {
+      stroke: var(--amber-400);
+      stroke-width: 2.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      fill: none;
+      stroke-dasharray: 120;
+      stroke-dashoffset: 120;
+      animation: drawTri 0.5s ease 0.45s forwards;
+    }
+
+    .excl-body {
+      stroke: var(--amber-400);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-dasharray: 12;
+      stroke-dashoffset: 12;
+      animation: drawLine 0.25s ease 0.85s forwards;
+    }
+    .excl-dot {
+      fill: var(--amber-400);
+      transform-origin: 20px 31px;
+      transform: scale(0);
+      animation: dotPop 0.25s cubic-bezier(0.175,0.885,0.32,1.275) 1.05s forwards;
+    }
+
+    @keyframes popIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes drawTri {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes dotPop {
+      to { transform: scale(1); }
+    }
+
+    /* ── typography ────────────────────────────── */
+    .title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text-1);
+      line-height: 1.15;
+      margin-bottom: 0.4rem;
+      animation: fadeUp 0.4s ease 0.55s both;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      text-align: center;
+      color: var(--text-2);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.6s both;
+    }
+
+    /* ── error code block ──────────────────────── */
+    .error-block {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-left: 3px solid var(--amber-200);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.4s ease 0.65s both;
+    }
+
+    .error-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .error-tag {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--amber-400);
+    }
+
+    .error-code {
+      font-family: 'DM Sans', monospace;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-3);
+      background: var(--surface3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .error-message {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-2);
+      font-weight: 300;
+    }
+
+    /* ── details ───────────────────────────────── */
+    .details {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.72s both;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+    }
+    .detail-label { color: var(--text-2); font-weight: 300; }
+    .detail-value { color: var(--text-1); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    .badge-error {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--amber-50);
+      color: var(--amber-600);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 100px;
+      border: 0.5px solid rgba(186,117,23,0.2);
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber-200);
+      flex-shrink: 0;
+    }
+
+    /* ── steps ─────────────────────────────────── */
+    .steps-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.75rem;
+      animation: fadeUp 0.4s ease 0.75s both;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.78s both;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-2);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--surface3);
+      border: 0.5px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-top: 1px;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: var(--border);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── actions ───────────────────────────────── */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeUp 0.4s ease 0.85s both;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--amber-600);
+      color: var(--amber-50);
+    }
+    .btn-primary:hover { background: var(--amber-800); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 0.5px solid var(--border2);
+    }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text-1); }
+
+    /* ── footer ────────────────────────────────── */
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-3);
+      text-align: center;
+      animation: fadeUp 0.4s ease 0.95s both;
+    }
+    .footer-note a {
+      color: var(--amber-400);
+      text-underline-offset: 3px;
+    }
+
+    .brand {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: fadeUp 0.4s ease 1s both;
+    }
+    .brand svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── keyframes ─────────────────────────────── */
+    @keyframes cardIn {
+      0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeUp {
+      0%   { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2.5rem 1.5rem 2rem; }
+      .title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-bar"></div>
+
+    <div class="ring-wrap">
+      <svg class="warn-svg" viewBox="0 0 40 40" aria-hidden="true">
+        <path class="tri-path" d="M20 5 L37 33 H3 Z"/>
+        <line class="excl-body" x1="20" y1="15" x2="20" y2="26"/>
+        <circle class="excl-dot" cx="20" cy="31" r="1.8"/>
+      </svg>
+    </div>
+
+    <h1 class="title">Something went wrong</h1>
+    <p class="subtitle">Your payment could not be processed due to a system error.</p>
+
+    <div class="error-block">
+      <div class="error-block-header">
+        <span class="error-tag">Error details</span>
+        <span class="error-code">ERR_GW_TIMEOUT_503</span>
+      </div>
+      <p class="error-message">The payment gateway timed out before a response was received. Your card has not been charged. This is a temporary issue on our end.</p>
+    </div>
+
+    <div class="details">
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="badge-error"><span class="badge-dot"></span>Error</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Amount</span>
+        <span class="detail-value">$249.00</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Reference</span>
+        <span class="detail-value">#TXN-8844-KX</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Time</span>
+        <span class="detail-value">Apr 21, 2026 · 14:32 UTC</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Method</span>
+        <span class="detail-value">Visa •••• 4291</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="steps-label">What to do next</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <span>Wait a moment and retry — the issue is usually resolved within seconds.</span>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <span>Check your bank statement to confirm no charge was made before retrying.</span>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <span>If the problem persists, contact our support team with your reference number.</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary">Retry payment</button>
+      <button class="btn btn-ghost">Contact support</button>
+    </div>
+
+    <p class="footer-note">No charges were made to your account. Reference: <a href="#">#TXN-8844-KX</a></p>
+  </div>
+
+  <p class="brand">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5a5.5 5.5 0 110-11 5.5 5.5 0 010 11z" fill="currentColor"/>
+      <path d="M8 5a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 018 5zm0 6a.75.75 0 100-1.5.75.75 0 000 1.5z" fill="currentColor"/>
+    </svg>
+    Secured by PayShield · 256-bit encryption
+  </p>
+
+</body>
+</html>
