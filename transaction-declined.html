@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Declined</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red-50:   #FCEBEB;
+      --red-100:  #F7C1C1;
+      --red-200:  #F09595;
+      --red-400:  #E24B4A;
+      --red-600:  #A32D2D;
+      --red-800:  #791F1F;
+      --red-900:  #501313;
+      --amber-50: #FAEEDA;
+      --amber-400:#BA7517;
+      --amber-800:#633806;
+      --bg:       #1A1210;
+      --surface:  #231714;
+      --surface2: #2C1C18;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.12);
+      --text-1:   #F2EDE8;
+      --text-2:   #9A8F89;
+      --text-3:   #5E524D;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      color: var(--text-1);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* subtle noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-xl);
+      padding: 3rem 2.5rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+      box-shadow: 0 4px 60px rgba(0,0,0,0.5);
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    /* red glow at top */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      height: 120px;
+      background: radial-gradient(ellipse, rgba(226,75,74,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--red-900), var(--red-400), var(--red-200));
+    }
+
+    /* ── icon ring ─────────────────────────────── */
+    .ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: rgba(226,75,74,0.12);
+      border: 1.5px solid rgba(226,75,74,0.25);
+      margin: 0 auto 1.75rem;
+      animation: popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275) 0.1s both;
+    }
+
+    .x-svg {
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: var(--red-400);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+    }
+    .x-line-1 {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: drawLine 0.3s ease 0.5s forwards;
+    }
+    .x-line-2 {
+      stroke-dasharray: 30;
+      stroke-dashoffset: 30;
+      animation: drawLine 0.3s ease 0.68s forwards;
+    }
+
+    @keyframes popIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ── typography ────────────────────────────── */
+    .title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      font-weight: 400;
+      text-align: center;
+      color: var(--text-1);
+      line-height: 1.15;
+      margin-bottom: 0.4rem;
+      animation: fadeUp 0.4s ease 0.55s both;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-weight: 300;
+      text-align: center;
+      color: var(--text-2);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.6s both;
+    }
+
+    /* ── reason block ──────────────────────────── */
+    .reason-block {
+      background: rgba(226,75,74,0.08);
+      border: 0.5px solid rgba(226,75,74,0.2);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.4s ease 0.65s both;
+    }
+    .reason-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .reason-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--red-400);
+    }
+    .reason-text {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--red-200);
+      font-weight: 300;
+    }
+    .reason-text strong {
+      font-weight: 500;
+      color: var(--red-100);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* ── details ───────────────────────────────── */
+    .details {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.4s ease 0.72s both;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+    }
+    .detail-label { color: var(--text-2); font-weight: 300; }
+    .detail-value { color: var(--text-1); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    .badge-declined {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(226,75,74,0.12);
+      color: var(--red-200);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 100px;
+      border: 0.5px solid rgba(226,75,74,0.2);
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red-400);
+      flex-shrink: 0;
+    }
+
+    .amount-strike {
+      color: var(--text-2);
+      text-decoration: line-through;
+      text-decoration-color: var(--red-600);
+    }
+
+    .divider {
+      height: 0.5px;
+      background: var(--border);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── actions ───────────────────────────────── */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeUp 0.4s ease 0.8s both;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--red-600);
+      color: var(--red-100);
+    }
+    .btn-primary:hover { background: var(--red-800); }
+
+    .btn-secondary {
+      background: rgba(186,117,23,0.15);
+      color: #F5C879;
+      border: 0.5px solid rgba(186,117,23,0.25);
+    }
+    .btn-secondary:hover { background: rgba(186,117,23,0.22); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border: 0.5px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text-1); }
+
+    /* ── footer ────────────────────────────────── */
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-3);
+      text-align: center;
+      animation: fadeUp 0.4s ease 0.9s both;
+    }
+
+    .brand {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 1;
+      position: relative;
+      animation: fadeUp 0.4s ease 1s both;
+    }
+    .brand svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── keyframes ─────────────────────────────── */
+    @keyframes cardIn {
+      0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fadeUp {
+      0%   { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2.5rem 1.5rem 2rem; }
+      .title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-bar"></div>
+
+    <div class="ring-wrap">
+      <svg class="x-svg" viewBox="0 0 36 36" aria-hidden="true">
+        <line class="x-line-1" x1="10" y1="10" x2="26" y2="26"/>
+        <line class="x-line-2" x1="26" y1="10" x2="10" y2="26"/>
+      </svg>
+    </div>
+
+    <h1 class="title">Payment declined</h1>
+    <p class="subtitle">We were unable to process your transaction.</p>
+
+    <div class="reason-block">
+      <span class="reason-icon">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5a5.5 5.5 0 110-11 5.5 5.5 0 010 11z"/>
+          <path d="M8 5a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3A.75.75 0 018 5zm0 6.5a.75.75 0 100-1.5.75.75 0 000 1.5z"/>
+        </svg>
+      </span>
+      <div class="reason-text">
+        <strong>Insufficient funds</strong>
+        Your card ending in 4291 was declined. Please use a different payment method or contact your bank.
+      </div>
+    </div>
+
+    <div class="details">
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="badge-declined"><span class="badge-dot"></span>Declined</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Amount attempted</span>
+        <span class="detail-value amount-strike">$249.00</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Reference</span>
+        <span class="detail-value">#TXN-8843-KX</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date</span>
+        <span class="detail-value">Apr 21, 2026</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Method</span>
+        <span class="detail-value">Visa •••• 4291</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary">Try again</button>
+      <button class="btn btn-secondary">Use a different card</button>
+      <button class="btn btn-ghost">Cancel</button>
+    </div>
+
+    <p class="footer-note">No charges were made. Need help? <a href="#" style="color: var(--red-200); text-underline-offset: 3px;">Contact support</a></p>
+  </div>
+
+  <p class="brand">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5a5.5 5.5 0 110-11 5.5 5.5 0 010 11z" fill="currentColor"/>
+      <path d="M8 5a.75.75 0 01.75.75v2.5a.75.75 0 01-1.5 0v-2.5A.75.75 0 018 5zm0 6a.75.75 0 100-1.5.75.75 0 000 1.5z" fill="currentColor"/>
+    </svg>
+    Secured by PayShield · 256-bit encryption
+  </p>
+
+</body>
+</html>
